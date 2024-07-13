@@ -1,0 +1,3 @@
+Earth 0 1000
+Planet_1 10 50
+Planet_2 20 100
