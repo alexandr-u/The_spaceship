@@ -75,15 +75,16 @@ public:
 class Play
 {
 public:
+    Spaceship m_mainSpaceship;
+    std::vector<Planet> m_allPlanets;
+    Play() = default;
     // запуск игры 
     void start()
     {
-        // созрание корабля игрока
-        Spaceship mainSpaceship;
         // приветственная запись
-        std::cout << "Hi! You are the captain of a spaceship.  We are on the Ground now. \nLet's fly to some planet? (The flight is wasting oil.)"<< mainSpaceship;
+        std::cout << "Hi! You are the captain of a spaceship.  We are on the Ground now. \nLet's fly to some planet? (The flight is wasting oil.)"<< m_mainSpaceship;
         // создание планет по данным из файла
-        std::vector<Planet> allPlanets;
+        m_allPlanets;
         std::fstream inF;
         inF.open("planet.txt");
         if (!inF.eof())
@@ -92,37 +93,38 @@ public:
             {
                 Planet temp;
                 inF >> temp;
-                allPlanets.push_back(temp);
+                m_allPlanets.push_back(temp);
             }
             //вывод планет
-            auto a = allPlanets.begin();
-            outputAllPlanet(allPlanets.begin(), allPlanets.end());
+            outputAllPlanet();
             //полет
-            fly(allPlanets.begin(), allPlanets.end());
+            fly();
         }
         else { std::cout << "\nThe planet file was not found"; }
 
     }
     // проигрыш (когда защита при бое с врагом меньше на 1)
     // вывод планет
-    void outputAllPlanet(std::vector<Planet>::iterator beginVec, std::vector<Planet>::iterator endVec)
+    void outputAllPlanet()
     {
         std::cout << "\nThe output of data about the planet.";
-        while (beginVec != endVec)
+        auto beginVec = m_allPlanets.begin();
+        while (beginVec != m_allPlanets.end())
         {
             std::cout << *beginVec++;
         }
     }
     // полет на планету + возможность врагов
-    void fly(std::vector<Planet>::iterator beginVec, std::vector<Planet>::iterator endVec)
+    void fly()
     {
-        std::cout << "\nEnter the name of the planet you want to fly to or the quit to exit";
+        std::cout << "\nEnter the name of the planet you want to fly to or the quit to exit: ";
         std::string namePlanet;
         std::cin >> namePlanet;
         if (namePlanet != "quit" && namePlanet != "Quit")
         {
+            auto beginVec = m_allPlanets.begin();
             bool flag = 0; // проверка что нашлось такое имя
-            while (beginVec != endVec && !flag)
+            while (beginVec != m_allPlanets.end() && !flag)
             {
                 if (namePlanet == beginVec->label) { flag = 1; }
                 else { ++beginVec; }
@@ -130,11 +132,15 @@ public:
             if (flag)
             {
                 //перелет на планету со сменой координат и вычетом топлива
+                m_mainSpaceship.oil -= abs(m_mainSpaceship.location - beginVec->location);
+                m_mainSpaceship.location = beginVec->location;
+                std::cout << "\nYou have arrived on the planet." << *beginVec;
+                //приводит к выбору доступных действий
             }
             else
             {
                 std::cout << "\nA planet with that name has not been found. Please try again";
-                fly(beginVec, endVec);
+                fly();
             }
         }
         // else приводит к выбору доступных действий
