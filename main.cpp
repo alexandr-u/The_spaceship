@@ -20,6 +20,11 @@ public:
     int food;
     int oil;
     int safety;
+    friend std::ostream& operator<<(std::ostream& os, Spaceship& item) //перегрузка метода вывода для планеты
+    {
+        os << "\nNow you have: \noil\t\t"<< item.oil<<"\nfood\t\t"<<item.food<<"\nsafety\t\t"<< item.safety << "\nresources\t"<<item.resources;
+        return os;
+    }
 };
 
 class Enemy
@@ -74,27 +79,38 @@ public:
     {
         // созрание корабля игрока
         Spaceship mainSpaceship;
+        // приветственная запись
+        std::cout << "Hi! You are the captain of a spaceship.  We are on the Ground now. \nLet's fly to some planet? (The flight is wasting oil.)"<< mainSpaceship;
         // создание планет по данным из файла
         std::vector<Planet> allPlanets;
         std::fstream inF;
         inF.open("planet.txt");
-        while (!inF.eof())
+        if (!inF.eof())
         {
-            Planet temp;
-            inF >> temp;
-            allPlanets.push_back(temp);
+            while (!inF.eof())
+            {
+                Planet temp;
+                inF >> temp;
+                allPlanets.push_back(temp);
+            }
+            //вывод планет
+            outputAllPlanet(allPlanets);
+
         }
-        outputAllPlanet(allPlanets);
+        else { std::cout << "\nThe planet file was not found"; }
+
     }
     // проигрыш (когда защита при бое с врагом меньше на 1)
     // вывод планет
     void outputAllPlanet(std::vector<Planet> vec)
     {
+        std::cout << "\nThe output of data about the planet.";
         for (auto& el : vec) {
-            std::cout << "\nThe output of data about the planet." << el;
+            std::cout << el;
         }
     }
     // полет на планету + возможность врагов
+    
     // обмен ресурсов в магазине на планете
     // бой с врагами (бул)
     // бой с врагами логика
