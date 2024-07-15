@@ -11,20 +11,20 @@ public:
     Spaceship() //начальные ресурсы игрока
     {
         location = 0;
-        resources = 100;
-        food = 100;
-        oil = 100;
-        safety = 100;
+        m_resources = 100;
+        m_food = 100;
+        m_fuel = 100;
+        m_protection = 100;
     }
-    //resources. food. oil. location. safety.
+    //resources. food. fuel. location. protection.
     static int location;
-    int resources;
-    int food;
-    int oil;
-    int safety;
+    int m_resources;
+    int m_food;
+    int m_fuel;
+    int m_protection;
     friend std::ostream& operator<<(std::ostream& os, Spaceship& item) //перегрузка метода вывода для планеты
     {
-        os << "\nNow you have: \noil\t\t"<< item.oil<<"\nfood\t\t"<<item.food<<"\nsafety\t\t"<< item.safety << "\nresources\t"<<item.resources;
+        os << "\nNow you have: \nfuel\t\t" << item.m_fuel << "\nfood\t\t" << item.m_food << "\nprotection\t" << item.m_protection << "\nresources\t" << item.m_resources;
         return os;
     }
 };
@@ -32,23 +32,23 @@ public:
 class Enemy
 {
 public:
-    //resources. oil. safety.
-    int resources;
-    int oil;
-    int safety;
+    //resources. fuel. protection.
+    int m_resources;
+    int m_fuel;
+    int m_protection;
     Enemy() = default;
-    Enemy(int resourcesValue, int oilValue, int safetyValue) : resources(resourcesValue), oil(oilValue), safety(safetyValue) {};
+    Enemy(int resourcesValue, int fuelValue, int protectionValue) : m_resources(resourcesValue), m_fuel(fuelValue), m_protection(protectionValue) {};
     Enemy(const Enemy& over) = default;
-    void operator () (int resourcesValue, int oilValue, int safetyValue) //вносить данные через скобочки
+    void operator () (int resourcesValue, int fuelValue, int protectionValue) //вносить данные через скобочки
     {
-        resources = resourcesValue;
-        oil = oilValue;
-        safety = safetyValue;
+        m_resources = resourcesValue;
+        m_fuel = fuelValue;
+        m_protection = protectionValue;
     }
     ~Enemy() = default;
     friend std::ostream& operator<<(std::ostream& os, Enemy& item) //перегрузка метода вывода для врага
     {
-        os <<"\nInformation about the enemy.\nresources\t"<< item.resources <<"\noil\t\t" << item.oil << "\nsafety\t\t" << item.safety;
+        os << "\nInformation about the enemy:\nfuel\t\t" << item.m_fuel << "\nprotection\t" << item.m_protection << "\nresources\t" << item.m_resources;
         return os;
     }
 };
@@ -57,9 +57,9 @@ class Shop
 {
 public:
     // цена еды топлива и безопасности
-    int p_food;
-    int p_oil;
-    int p_safety;
+    int m_piceFood;
+    int m_piceFuel;
+    int m_piceProtection;
 };
 
 class Planet
@@ -100,7 +100,7 @@ public:
     void start()
     {
         // приветственная запись
-        std::cout << "Hi! You are the captain of a spaceship.  We are on the Ground now. \nLet's fly to some planet? (The flight is wasting oil.)"<< m_mainSpaceship;
+        std::cout << "Hi! You are the captain of a spaceship.  We are on the Ground now. \nLet's fly to some planet? (The flight is wasting fuel.)" << m_mainSpaceship;
         // создание планет по данным из файла
         m_allPlanets;
         std::fstream inF;
@@ -124,7 +124,7 @@ public:
     // проигрыш (когда защита при бое с врагом меньше на 1)
     void endOfGame()
     {
-        std::cout << "\nThe end of the game! See you next time!";
+        std::cout << "\nGame over! See you next time!";
     }
     // вывод планет
     void outputAllPlanet()
@@ -154,9 +154,9 @@ public:
             if (flag)
             {
                 //проверка, что топлива хватает
-                if ((m_mainSpaceship.oil - abs(m_mainSpaceship.location - beginVec->location))>=0)
+                if ((m_mainSpaceship.m_fuel - abs(m_mainSpaceship.location - beginVec->location)) >= 0)
                 {
-                    if (rand()%3<2) //случайное решение выпадение врага при 0 1 
+                    if (rand() % 3 < 2) //случайное решение выпадение врага при 0 1 
                     {
                         if (namePlanet != "Earth") { flyToPlanet(beginVec); }
                         else { flyToEarth(); }
@@ -165,8 +165,8 @@ public:
                     {
                         //Oh no. You've been attacked!
                         //генерация значений полей врага и его отправление на бой
-                        int temp = rand() % 70 + 50;//safety
-                        m_enemy(((double)temp/100*(rand()%40+30)), ((double)temp/100*(rand()%70+30)), temp);
+                        int temp = rand() % 70 + 50;//protection
+                        m_enemy(((double)temp / 100 * (rand() % 40 + 30)), ((double)temp / 100 * (rand() % 70 + 30)), temp);
                         if (attack()) //победа
                         {
                             if (namePlanet != "Earth") { flyToPlanet(beginVec); }
@@ -177,7 +177,7 @@ public:
                 }
                 else
                 {
-                    std::cout << "\nThere is not enough oil for the flight, choose another planet";
+                    std::cout << "\nThere is not enough fuel for the flight, choose another planet";
                     fly();
                 }
             }
@@ -193,18 +193,18 @@ public:
     void flyToEarth()
     {
         std::cout << "\nYou have arrived on Earth";
-        m_mainSpaceship.location = 0;        
-        if (m_mainSpaceship.resources < 100) { m_mainSpaceship.resources = 100; }
-        if (m_mainSpaceship.food < 100) { m_mainSpaceship.food = 100; }
-        if (m_mainSpaceship.oil < 100) { m_mainSpaceship.oil = 100; }
-        if (m_mainSpaceship.safety < 100) { m_mainSpaceship.safety = 100; }
+        m_mainSpaceship.location = 0;
+        if (m_mainSpaceship.m_resources < 100) { m_mainSpaceship.m_resources = 100; }
+        if (m_mainSpaceship.m_food < 100) { m_mainSpaceship.m_food = 100; }
+        if (m_mainSpaceship.m_fuel < 100) { m_mainSpaceship.m_fuel = 100; }
+        if (m_mainSpaceship.m_protection < 100) { m_mainSpaceship.m_protection = 100; }
         //приводит к выбору доступных действий
-     }
+    }
     // прилет на планету
     void flyToPlanet(std::vector<Planet>::iterator vecPlanet)
     {
         //перелет на планету со сменой координат и вычетом топлива
-        m_mainSpaceship.oil -= abs(m_mainSpaceship.location - vecPlanet->location);
+        m_mainSpaceship.m_fuel -= abs(m_mainSpaceship.location - vecPlanet->location);
         m_mainSpaceship.location = vecPlanet->location;
         std::cout << "\nYou have arrived on the planet." << *vecPlanet;
         //приводит к выбору доступных действий
@@ -214,19 +214,19 @@ public:
     bool battle()
     {
         Sleep(1000);
-        if (m_mainSpaceship.safety >= m_enemy.safety)
+        if (m_mainSpaceship.m_protection >= m_enemy.m_protection)
         {
-            m_mainSpaceship.oil += m_enemy.oil;
-            m_mainSpaceship.resources += m_enemy.resources;
-            m_mainSpaceship.safety += (m_enemy.resources / 2)-5;
-            std::cout << "\n\nCongratulations! You've won!"<< m_mainSpaceship;
+            m_mainSpaceship.m_fuel += m_enemy.m_fuel;
+            m_mainSpaceship.m_resources += m_enemy.m_resources;
+            m_mainSpaceship.m_protection += (m_enemy.m_resources / 2) - 5;
+            std::cout << "\n\nCongratulations! You've won!" << m_mainSpaceship;
             return true;
         }
         else
         {
-            m_mainSpaceship.safety -= 10;
-            m_enemy.safety -= 10;
-            std::cout << "\n\nNo luck! You've been defeated\nYour safety = "<< m_mainSpaceship.safety<<"\nEnemy`s safety = "<< m_enemy.safety;
+            m_mainSpaceship.m_protection -= 10;
+            m_enemy.m_protection -= 10;
+            std::cout << "\n\nNo luck! You've been defeated\nYour protection = " << m_mainSpaceship.m_protection << "\nEnemy`s protection = " << m_enemy.m_protection;
             return false;
         }
     }
@@ -234,20 +234,20 @@ public:
     bool attack()
     {
         std::cout << "\nOh no. You've been attacked!" << m_enemy;
-        if (battle()) 
+        if (battle())
         {
-            
+
             return true;
         }
         else
         {
             //здесь вожзможность перевести ресурсы в защиту
-            std::cout << "\nYou can transfer resources to safety";
+            std::cout << "\nYou can transfer resources to protection points";
             if (battle()) { return true; }
-            else 
-            { 
+            else
+            {
                 std::cout << "\nComplete defeat. You've lost!";
-                return false; 
+                return false;
             }
         }
 
