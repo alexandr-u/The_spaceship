@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <memory>
 
 class Spaceship
 {
@@ -94,23 +95,50 @@ public:
                 allPlanets.push_back(temp);
             }
             //вывод планет
-            outputAllPlanet(allPlanets);
-
+            auto a = allPlanets.begin();
+            outputAllPlanet(allPlanets.begin(), allPlanets.end());
+            //полет
+            fly(allPlanets.begin(), allPlanets.end());
         }
         else { std::cout << "\nThe planet file was not found"; }
 
     }
     // проигрыш (когда защита при бое с врагом меньше на 1)
     // вывод планет
-    void outputAllPlanet(std::vector<Planet> vec)
+    void outputAllPlanet(std::vector<Planet>::iterator beginVec, std::vector<Planet>::iterator endVec)
     {
         std::cout << "\nThe output of data about the planet.";
-        for (auto& el : vec) {
-            std::cout << el;
+        while (beginVec != endVec)
+        {
+            std::cout << *beginVec++;
         }
     }
     // полет на планету + возможность врагов
-    
+    void fly(std::vector<Planet>::iterator beginVec, std::vector<Planet>::iterator endVec)
+    {
+        std::cout << "\nEnter the name of the planet you want to fly to or the quit to exit";
+        std::string namePlanet;
+        std::cin >> namePlanet;
+        if (namePlanet != "quit" && namePlanet != "Quit")
+        {
+            bool flag = 0; // проверка что нашлось такое имя
+            while (beginVec != endVec && !flag)
+            {
+                if (namePlanet == beginVec->label) { flag = 1; }
+                else { ++beginVec; }
+            }
+            if (flag)
+            {
+                //перелет на планету со сменой координат и вычетом топлива
+            }
+            else
+            {
+                std::cout << "\nA planet with that name has not been found. Please try again";
+                fly(beginVec, endVec);
+            }
+        }
+        // else приводит к выбору доступных действий
+    }
     // обмен ресурсов в магазине на планете
     // бой с врагами (бул)
     // бой с врагами логика
