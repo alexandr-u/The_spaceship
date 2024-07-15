@@ -7,7 +7,7 @@
 class Spaceship
 {
 public:
-    Spaceship()
+    Spaceship() //начальные ресурсы игрока
     {
         location = 0;
         resources = 100;
@@ -131,11 +131,21 @@ public:
             }
             if (flag)
             {
-                //перелет на планету со сменой координат и вычетом топлива
-                m_mainSpaceship.oil -= abs(m_mainSpaceship.location - beginVec->location);
-                m_mainSpaceship.location = beginVec->location;
-                std::cout << "\nYou have arrived on the planet." << *beginVec;
-                //приводит к выбору доступных действий
+                //проверка, что топлива хватает
+                if ((m_mainSpaceship.oil - abs(m_mainSpaceship.location - beginVec->location))>=0)
+                {
+                    //перелет на планету со сменой координат и вычетом топлива
+                    m_mainSpaceship.oil -= abs(m_mainSpaceship.location - beginVec->location);
+                    m_mainSpaceship.location = beginVec->location;
+                    if (namePlanet != "Earth") { std::cout << "\nYou have arrived on the planet." << *beginVec; }
+                    else { flyToEarth(); }
+                    //приводит к выбору доступных действий
+                }
+                else
+                {
+                    std::cout << "\nThere is not enough oil for the flight, choose another planet";
+                    fly();
+                }
             }
             else
             {
@@ -145,6 +155,16 @@ public:
         }
         // else приводит к выбору доступных действий
     }
+    // прилет на планету Земля и повышение ресурсов до минимума (100)
+    void flyToEarth()
+    {
+        m_mainSpaceship.location = 0;        
+        if (m_mainSpaceship.resources < 100) { m_mainSpaceship.resources = 100; }
+        if (m_mainSpaceship.food < 100) { m_mainSpaceship.food = 100; }
+        if (m_mainSpaceship.oil < 100) { m_mainSpaceship.oil = 100; }
+        if (m_mainSpaceship.safety < 100) { m_mainSpaceship.safety = 100; }
+        //приводит к выбору доступных действий
+     }
     // обмен ресурсов в магазине на планете
     // бой с врагами (бул)
     // бой с врагами логика
