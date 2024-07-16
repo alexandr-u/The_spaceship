@@ -76,13 +76,13 @@ public:
 
     friend std::istream& operator>>(std::istream& is, Planet& item) //перегрузка метода ввода для планеты
     {
-        is >> item.label >> item.location >> item.resources;
+        is >> item.label >> item.location >> item.resources >> item.shop.m_piceFood>> item.shop.m_piceFuel>> item.shop.m_piceProtection;
         return is;
     }
 
     friend std::ostream& operator<<(std::ostream& os, Planet& item) //перегрузка метода вывода для планеты
     {
-        os << "\n\nThe name of the planet:\t" << item.label << "\nDistance to the planet:\t" << abs(Spaceship::location - item.location) << "\nNumber of available resources:\t" << item.resources;
+        os << "\n " << item.label << "\t" << item.resources << "\t\t" << abs(Spaceship::location - item.location);
         return os;
     }
 
@@ -124,12 +124,13 @@ public:
     // проигрыш (когда защита при бое с врагом меньше на 1)
     void endOfGame()
     {
-        std::cout << "\nGame over! See you next time!";
+        std::cout << "\nThe end of the game! See you next time!";
     }
     // вывод планет
     void outputAllPlanet()
     {
         std::cout << "\nThe output of data about the planet.";
+        std::cout << "\n Label   \tResourses\tDistanse";
         auto beginVec = m_allPlanets.begin();
         while (beginVec != m_allPlanets.end())
         {
@@ -146,38 +147,50 @@ public:
         {
             auto beginVec = m_allPlanets.begin();
             bool flag = 0; // проверка что нашлось такое имя
-            while (beginVec != m_allPlanets.end() && !flag)
+            if (namePlanet != "Earth" && namePlanet != "Earth(Home)") 
             {
-                if (namePlanet == beginVec->label) { flag = 1; }
-                else { ++beginVec; }
+                while (beginVec != m_allPlanets.end() && !flag)
+                {
+                    if (namePlanet == beginVec->label) { flag = 1; }
+                    else { ++beginVec; }
+                }
             }
+            else { flag = 1; }
             if (flag)
             {
-                //проверка, что топлива хватает
-                if ((m_mainSpaceship.m_fuel - abs(m_mainSpaceship.location - beginVec->location)) >= 0)
+                if (abs(m_mainSpaceship.location - beginVec->location) != 0) //проверка что не та же планета, что и сейчас
                 {
-                    if (rand() % 3 < 2) //случайное решение выпадение врага при 0 1 
+                    //проверка, что топлива хватает
+                    if ((m_mainSpaceship.m_fuel - abs(m_mainSpaceship.location - beginVec->location)) >= 0)
                     {
-                        if (namePlanet != "Earth") { flyToPlanet(beginVec); }
-                        else { flyToEarth(); }
-                    }
-                    else //выпадение врага при 2
-                    {
-                        //Oh no. You've been attacked!
-                        //генерация значений полей врага и его отправление на бой
-                        int temp = rand() % 70 + 50;//protection
-                        m_enemy(((double)temp / 100 * (rand() % 40 + 30)), ((double)temp / 100 * (rand() % 70 + 30)), temp);
-                        if (attack()) //победа
+                        if (rand() % 3 < 2) //случайное решение выпадение врага при 0 1 
                         {
-                            if (namePlanet != "Earth") { flyToPlanet(beginVec); }
+                            if (namePlanet != "Earth" && namePlanet != "Earth(Home)") { flyToPlanet(beginVec); }
                             else { flyToEarth(); }
                         }
-                        else { endOfGame(); }
+                        else //выпадение врага при 2
+                        {
+                            //Oh no. You've been attacked!
+                            //генерация значений полей врага и его отправление на бой
+                            int temp = rand() % 70 + 50;//protection
+                            m_enemy(((double)temp / 100 * (rand() % 40 + 30)), ((double)temp / 100 * (rand() % 70 + 30)), temp);
+                            if (attack()) //победа
+                            {
+                                if (namePlanet != "Earth" && namePlanet != "Earth(Home)") { flyToPlanet(beginVec); }
+                                else { flyToEarth(); }
+                            }
+                            else { endOfGame(); }
+                        }
+                    }
+                    else
+                    {
+                        std::cout << "\nThere is not enough fuel for the flight, choose another planet";
+                        fly();
                     }
                 }
                 else
                 {
-                    std::cout << "\nThere is not enough fuel for the flight, choose another planet";
+                    std::cout << "\nYou are already on this planet, choose another planet";
                     fly();
                 }
             }
@@ -206,7 +219,7 @@ public:
         //перелет на планету со сменой координат и вычетом топлива
         m_mainSpaceship.m_fuel -= abs(m_mainSpaceship.location - vecPlanet->location);
         m_mainSpaceship.location = vecPlanet->location;
-        std::cout << "\nYou have arrived on the planet." << *vecPlanet;
+        std::cout << "\n\nYou have arrived on the planet. (8-8)" << *vecPlanet;
         //приводит к выбору доступных действий
     }
     // обмен ресурсов в магазине на планете
@@ -233,27 +246,45 @@ public:
     // бой с врагами логика
     bool attack()
     {
-        std::cout << "\nOh no. You've been attacked!" << m_enemy;
+        std::cout << "\nOh no. You've been attacked! (:\\/)" << m_enemy;
         if (battle())
         {
-
             return true;
         }
         else
         {
             //здесь вожзможность перевести ресурсы в защиту
-            std::cout << "\nYou can transfer resources to protection points";
+            std::string value;
+            std::cout << "\nYou can transfer resources to protection points. Enter yes or no: ";
+            std::cin>>value;
+            while (value[0] == 'Y' || value[0] == 'y')
+            {
+                std::cout << "\nYou can get one point of protection for three resource points.";
+                std::cout << "\nYous resource points: "<<m_mainSpaceship.m_resources;
+                std::cout << "\nEnter the number of protection to share. ";
+                int valueInt;// очки ресурсов для обмена
+                std::cin >> valueInt;
+                while (valueInt > (m_mainSpaceship.m_resources/3)) {
+                    std::cout << "\nYou don't have that many resources. Enter the number of protection to share. ";
+                    std::cin >> valueInt;
+                }
+                m_mainSpaceship.m_resources -= valueInt*3;
+                m_mainSpaceship.m_protection += valueInt;
+                std::cout << "\n\nSuccessful exchange\nYour protection = " << m_mainSpaceship.m_protection << "\nEnemy`s protection = " << m_enemy.m_protection;
+                std::cout << "\nYou can transfer resources to protection points. Enter yes or no: ";
+                std::cin >> value;
+            }            
             if (battle()) { return true; }
             else
             {
-                std::cout << "\nComplete defeat. You've lost!";
+                std::cout << "\nGame over! You've lost!";
                 return false;
             }
         }
 
     }
     // поиск ресурсов на планете + возможность врагов
-    // прилет на землю с пополнением всех полей до минимума (100)
+    // обмен ресурсов в магазине
 };
 
 int Spaceship::location = 0;
