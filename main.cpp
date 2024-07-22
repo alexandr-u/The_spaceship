@@ -16,6 +16,7 @@ public:
         m_fuel = 100;
         m_protection = 100;
     }
+    ~Spaceship() = default;
     //resources. food. fuel. location. protection.
     static int location;
     int m_resources;
@@ -60,6 +61,8 @@ public:
     int m_piceFood;
     int m_piceFuel;
     int m_piceProtection;
+    Shop() = default;
+    ~Shop() = default;
 };
 
 class Planet
@@ -88,14 +91,15 @@ public:
 
 };
 
-class Play
+class Game
 {
 public:
     Spaceship m_mainSpaceship;
     std::vector<Planet> m_allPlanets;
     Enemy m_enemy;
 
-    Play() = default;
+    Game() = default;
+    ~Game() = default;
     // запуск игры 
     void start()
     {
@@ -113,8 +117,6 @@ public:
                 inF >> temp;
                 m_allPlanets.push_back(temp);
             }
-            //вывод планет
-            outputAllPlanet();
             //полет
             fly();
         }
@@ -140,6 +142,8 @@ public:
     // полет на планету + возможность врагов
     void fly()
     {
+        //вывод планет
+        outputAllPlanet();
         std::cout << "\nEnter the name of the planet you want to fly to or the quit to exit: ";
         std::string namePlanet;
         std::cin >> namePlanet;
@@ -179,7 +183,7 @@ public:
                                 if (namePlanet != "Earth" && namePlanet != "Earth(Home)") { flyToPlanet(beginVec); }
                                 else { flyToEarth(); }
                             }
-                            else { endOfGame(); }
+                            else { menu(); }
                         }
                     }
                     else
@@ -201,6 +205,39 @@ public:
             }
         }
         // else приводит к выбору доступных действий
+        menu();
+    }
+    //выбор доступных действий
+    void menu()
+    {
+        int choose;
+        std::cout << "\nAvailable to you: \n\t1.Flight to another planet\n\t2.Resource search\n\t3.Information about the ship\n\t4.Exchange of resources in the store\n\t0.Exit the game\nEnter your choose ";
+        std::cin >> choose;
+        switch (choose)
+        {
+        case 1:
+            fly();
+            break;
+        case 2:
+            std::cout << "\nSorry, the feature is in development";
+            menu();
+            break;
+        case 3:
+            std::cout << m_mainSpaceship;
+            menu();
+            break;
+        case 4:
+            std::cout << "\nSorry, the feature is in development";
+            menu();
+            break;
+        case 0:
+            endOfGame();
+            break;
+        deflaut:
+            std::cout << "\nEnter a different value";
+            menu();
+        }
+        
     }
     // прилет на планету Земля и повышение ресурсов до минимума (100)
     void flyToEarth()
@@ -212,6 +249,7 @@ public:
         if (m_mainSpaceship.m_fuel < 100) { m_mainSpaceship.m_fuel = 100; }
         if (m_mainSpaceship.m_protection < 100) { m_mainSpaceship.m_protection = 100; }
         //приводит к выбору доступных действий
+        menu();
     }
     // прилет на планету
     void flyToPlanet(std::vector<Planet>::iterator vecPlanet)
@@ -221,8 +259,8 @@ public:
         m_mainSpaceship.location = vecPlanet->location;
         std::cout << "\n\nYou have arrived on the planet. (8-8)" << *vecPlanet;
         //приводит к выбору доступных действий
+        menu();
     }
-    // обмен ресурсов в магазине на планете
     // бой с врагами (бул)
     bool battle()
     {
@@ -292,7 +330,7 @@ int Spaceship::location = 0;
 int main()
 {
     srand(time(0)); //rand()
-    Play main;
+    Game main;
     main.start();
 
     return 0;
