@@ -2,7 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <memory>
 #include "windows.h"
 
 class Spaceship
@@ -23,7 +22,7 @@ public:
     int m_food;
     int m_fuel;
     int m_protection;
-    friend std::ostream& operator<<(std::ostream& os, Spaceship& item) //перегрузка метода вывода для планеты
+    friend std::ostream& operator<<(std::ostream& os, Spaceship& item)  //перегрузка метода вывода для планеты
     {
         os << "\nNow you have: \nfuel\t\t" << item.m_fuel << "\nfood\t\t" << item.m_food << "\nprotection\t" << item.m_protection << "\nresources\t" << item.m_resources;
         return os;
@@ -124,7 +123,7 @@ public:
 
     }
     // проигрыш (когда защита при бое с врагом меньше на 1)
-    void endOfGame()
+    void endOfGame() const
     {
         std::cout << "\nThe end of the game! See you next time!";
     }
@@ -205,7 +204,7 @@ public:
             }
         }
         // else приводит к выбору доступных действий
-        menu();
+        //menu();
     }
     //выбор доступных действий
     void menu()
