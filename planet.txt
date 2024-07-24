@@ -1,6 +1,6 @@
-Earth 0 1000 1 1 1
-Planfood 70 150 1 5 7
-Planfuel 80 100 3 2 7
-Planprotect 150 180 3 5 3
-Plantechno 40 135 4 4 5
-Planet 30 150 3 5 7
+1 Earth(Home) 0 1000 1 1 1
+2 Planfood 70 150 1 5 7
+3 Planfuel 80 100 3 2 7
+4 Planprotect 150 180 3 5 3
+5 Plantechno 40 135 4 4 5
+6 Planetbase 30 150 3 5 7
