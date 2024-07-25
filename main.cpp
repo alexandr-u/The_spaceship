@@ -1,8 +1,5 @@
+
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include "windows.h"
 #include "GameSpaseship.h"
 
 int Spaceship::location = 0;
