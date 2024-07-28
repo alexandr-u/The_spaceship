@@ -38,13 +38,12 @@ public:
     int getProtection() const { return m_protection; }
 
     void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
-    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
-    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
-    void setProtectionEnded() { m_protection = -1; }
+    void setFuel(int velueFuel) { m_fuel = zeroIfNegative(velueFuel); }
+    void setProtection(int velueProtection) { m_protection = zeroIfNegative(velueProtection); }
 
     void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
-    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
-    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
+    void addFuel(int velueFuel) { m_fuel += zeroIfNegative(velueFuel); }
+    void addProtection(int velueProtection) { m_protection += zeroIfNegative(velueProtection); }
 
 protected:
     int m_resources;
@@ -76,10 +75,10 @@ public:
 
     int getFood() const { return m_food; }
 
-    void setFood(int velueFood) { m_resources = zeroIfNegative(velueFood); }
+    void setFood(int velueFood) { m_food = zeroIfNegative(velueFood); }
     void setProtectionEnded() { m_protection = -1; }
 
-    void addFood(int velueFood) { m_resources += zeroIfNegative(velueFood); }
+    void addFood(int velueFood) { m_food += zeroIfNegative(velueFood); }
 
 private:
     //переменные: ресурсы, пища, топливо, защита
@@ -136,6 +135,11 @@ public:
     {};
     ~Shop() = default;
 
+    int getPriceFood() const { return m_piceFood; }
+    int getPriceFuel() const { return m_piceFuel; }
+    int getPriceProtection() const { return m_piceProtection; }
+
+private:
     // цена еды топлива и безопасности
     int m_piceFood;
     int m_piceFuel;
@@ -168,6 +172,17 @@ public:
     Planet(const Planet& over) = default;
     ~Planet() = default;
 
+    int getNumber() const { return number; }
+    int getLocation() const { return location; }
+    int getResources() const { return resources; }
+
+    void removeResources(int value)
+    {
+        if (value > resources) { value = resources; }
+        resources -= value;
+    }
+
+private:
     //название, положение, ресурсы, магазин
     int number;
     std::string label;
@@ -343,7 +358,7 @@ public:
         int numberPlanet;
         if (inputInt(numberPlanet))
         {
-            if (numberPlanet < 0 && numberPlanet >((*m_allPlanets.cend()).number)) { return -1; }
+            if (numberPlanet < 0 && numberPlanet >((*m_allPlanets.cend()).getNumber())) { return -1; }
             else { return numberPlanet; }
         }
         else
@@ -356,7 +371,7 @@ public:
     int possibilityOfFlight(int num)
     {
         // расстояние до планеты
-        int temp = abs(m_mainSpaceship.location - m_allPlanets[num].location);
+        int temp = abs(m_mainSpaceship.location - m_allPlanets[num].getLocation());
 
         // проверка что не та же планета, что и сейчас, иначе -1
         if (temp == 0) { return -1; }
@@ -395,8 +410,8 @@ public:
     void flyToPlanet(int num)
     {
         //перелет на планету со сменой координат и вычетом топлива
-        m_mainSpaceship.setFuel(m_mainSpaceship.getFuel() - abs(m_mainSpaceship.location - m_allPlanets[num].location));
-        m_mainSpaceship.location = m_allPlanets[num].location;
+        m_mainSpaceship.setFuel(m_mainSpaceship.getFuel() - abs(m_mainSpaceship.location - m_allPlanets[num].getLocation()));
+        m_mainSpaceship.location = m_allPlanets[num].getLocation();
         std::cout << "\n\nYou have arrived on the planet. (8-8)" << m_allPlanets[num];
     }
 
@@ -478,7 +493,7 @@ public:
             if (!inputInt(valueInt)) { valueInt = (m_mainSpaceship.getResources() / 3) + 1; }
         }
         m_mainSpaceship.setResources(m_mainSpaceship.getResources() - valueInt * 3);
-        m_mainSpaceship.addProtection( valueInt);
+        m_mainSpaceship.addProtection(valueInt);
         std::cout << "\n\nSuccessful exchange"
             << "\nYour protection = " << m_mainSpaceship.getProtection()
             << "\nEnemy`s protection = " << m_enemy.getProtection();
@@ -488,9 +503,9 @@ public:
     void searchForResources()
     {
         auto iter = m_allPlanets.begin();
-        while ((*iter).location != m_mainSpaceship.location) { ++iter; }
+        while ((*iter).getLocation() != m_mainSpaceship.location) { ++iter; }
         int i = 0;
-        while ((*iter).resources > 0 && m_mainSpaceship.getFood() > 0)
+        while ((*iter).getResources() > 0 && m_mainSpaceship.getFood() > 0)
         {
             if (i == 5)
             {
@@ -510,13 +525,13 @@ public:
                 i++;
                 std::cout << "\n\nYour resources: " << m_mainSpaceship.getResources()
                     << "\nYour food: " << m_mainSpaceship.getFood()
-                    << "\nPlanet`s resources: " << (*iter).resources;
+                    << "\nPlanet`s resources: " << (*iter).getResources();
                 Sleep(500);
                 gettingResources(iter);
             }
         }
         std::cout << std::endl;
-        if ((*iter).resources <= 0) { std::cout << "\nThe planet's resources have run out."; }
+        if ((*iter).getResources() <= 0) { std::cout << "\nThe planet's resources have run out."; }
         if (m_mainSpaceship.getFood() <= 0) { std::cout << "\nWe can't continue the search without food."; }
     }
 
@@ -525,8 +540,7 @@ public:
     {
         if (m_mainSpaceship.getFood() < 3) m_mainSpaceship.setFood(0);
         else { m_mainSpaceship.setFood(m_mainSpaceship.getFood() - 3); }
-        if ((*iterPlanet).resources < 7) (*iterPlanet).resources = 0;
-        else { (*iterPlanet).resources -= 7; }
+        (*iterPlanet).removeResources(7);
         m_mainSpaceship.addResources( 7);
     }
 
