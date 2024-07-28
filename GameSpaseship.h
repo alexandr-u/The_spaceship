@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <functional>
 #include "windows.h"
 
 bool inputInt(int& temp)
@@ -182,13 +183,13 @@ public:
         resources -= value;
     }
 
+    Shop shop; 
 private:
     //название, положение, ресурсы, магазин
     int number;
     std::string label;
     int location;
     int resources;
-    Shop shop;
 };
 
 class Game
@@ -270,7 +271,7 @@ public:
                 }
                 case 4: // обмен ресурсов в магазине
                 {
-                    //shopping();
+                    shopping();
                     break;
                 }
                 case 0: // выход из игры
@@ -546,46 +547,49 @@ public:
 
     // обмен ресурсов в магазине
 
-    //void shopping()
-    //{
-    //    auto iter = m_allPlanets.begin();
-    //    while ((*iter).location != m_mainSpaceship.location) { ++iter; }
+    void shopping()
+    {
+        auto iter = m_allPlanets.begin();
+        while ((*iter).getLocation() != m_mainSpaceship.location) { ++iter; }
 
-    //    //массив пар с указателем на значение продукта в корабле и на цену такого продукта в этом магазине
-    //    std::pair<int*, int*> masValuePrice[] = { {&(m_mainSpaceship.m_fuel), &((*iter).shop.m_piceFuel)},
-    //                                              {&(m_mainSpaceship.m_food), &((*iter).shop.m_piceFood)},
-    //                                              {&(m_mainSpaceship.m_protection), &((*iter).shop.m_piceProtection)} };
+        //массив пар с указателем на значение продукта в корабле и на цену такого продукта в этом магазине
+        std::pair<void (Spaceship::* )(int), int> masValuePrice[] = {{(&Spaceship::addFuel), ((*iter).shop.getPriceFuel())},
+                                                  {(&Spaceship::addFood), ((*iter).shop.getPriceFood())},
+                                                  {(&Spaceship::addProtection), ((*iter).shop.getPriceProtection())} };
+        
+        //void (Spaceship::* f)(int) = &Spaceship::setFuel;
+        //(m_mainSpaceship.*f)(11);
 
-    //    std::cout << (*iter).shop;
-    //    std::cout << "\nYour resources:" << m_mainSpaceship.getResources();
+        std::cout << (*iter).shop;
+        std::cout << "\nYour resources:" << m_mainSpaceship.getResources();
 
-    //    int numProd;
-    //    do
-    //    {
-    //        std::cout << "\nEnter the number of the product you want to buy: ";
-    //        if (!inputInt(numProd)) { numProd = -1; }
-    //    } while (numProd < 0 || numProd>3);
-    //    if (numProd == 0) return;
+        int numProd;
+        do
+        {
+            std::cout << "\nEnter the number of the product you want to buy: ";
+            if (!inputInt(numProd)) { numProd = -1; }
+        } while (numProd < 0 || numProd>3);
+        if (numProd == 0) return;
 
-    //    int quanProd = 0;
-    //    do
-    //    {
-    //        std::cout << "\nEnter the quantity of the product you want to buy: ";
-    //        if (inputInt(quanProd))
-    //        {
-    //            if (m_mainSpaceship.getResources() < (quanProd * *(masValuePrice[numProd - 1].second)))
-    //            {
-    //                std::cout << "\nThere are not enough resources to purchase the product";
-    //            }
-    //        }
-    //        else { quanProd = 1000000; }
-    //    } while (m_mainSpaceship.getResources() < (quanProd * *(masValuePrice[numProd - 1].second)));
-    //    if (quanProd == 0) return;
+        int quanProd = 0;
+        do
+        {
+            std::cout << "\nEnter the quantity of the product you want to buy: ";
+            if (inputInt(quanProd))
+            {
+                if (m_mainSpaceship.getResources() < (quanProd * (masValuePrice[numProd - 1].second)))
+                {
+                    std::cout << "\nThere are not enough resources to purchase the product";
+                }
+            }
+            else { quanProd = 1000000; }
+        } while (m_mainSpaceship.getResources() < (quanProd * (masValuePrice[numProd - 1].second)));
+        if (quanProd == 0) return;
 
-    //    *(masValuePrice[numProd - 1].first) += quanProd;
-    //    m_mainSpaceship.setResources(m_mainSpaceship.getResources() - (quanProd * *(masValuePrice[numProd - 1].second)));
-    //    std::cout << "\nThe purchase is successful! " << m_mainSpaceship;
-    //}
+        (m_mainSpaceship.*(masValuePrice[numProd-1].first))(quanProd);
+        m_mainSpaceship.setResources(m_mainSpaceship.getResources() - (quanProd * (masValuePrice[numProd - 1].second)));
+        std::cout << "\nThe purchase is successful! " << m_mainSpaceship;
+    }
 
 
     Spaceship m_mainSpaceship;
