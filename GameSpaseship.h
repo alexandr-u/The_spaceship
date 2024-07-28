@@ -33,6 +33,7 @@ public:
         m_fuel(velueFuel),
         m_protection(velueProtection)
     {};
+    virtual ~SpaseItem() = default;
 
     int getResources() const { return m_resources; }
     int getFuel() const { return m_fuel; }
