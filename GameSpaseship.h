@@ -22,13 +22,41 @@ bool inputInt(int& temp)
 
 int zeroIfNegative(int& value) { if (value < 0) { value = 0; } return value; }
 
+class SpaseItem
+{
+public:
 
+    SpaseItem() = default;
+    SpaseItem(int velueResources, int velueFuel, int velueProtection):
+        m_resources(velueResources),
+        m_fuel(velueFuel),
+        m_protection(velueProtection)
+    {};
 
-class Spaceship
+    int getResources() const { return m_resources; }
+    int getFuel() const { return m_fuel; }
+    int getProtection() const { return m_protection; }
+
+    void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
+    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
+    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
+    void setProtectionEnded() { m_protection = -1; }
+
+    void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
+    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
+    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
+
+protected:
+    int m_resources;
+    int m_fuel;
+    int m_protection;
+};
+
+class Spaceship : public SpaseItem
 {
 public:
     //перегрузка метода вывода для планеты
-    friend std::ostream& operator<<(std::ostream& os, Spaceship& item)
+    friend std::ostream& operator<<(std::ostream & os, Spaceship & item)
     {
         os << "\nNow you have: "
             << "\nfuel\t\t" << item.m_fuel
@@ -42,38 +70,23 @@ public:
 
     //начальные ресурсы игрока
     Spaceship() :
-        m_resources(100),
-        m_food(100),
-        m_fuel(100),
-        m_protection(100)
-    {};
+        SpaseItem::SpaseItem(100, 100, 100),
+        m_food(100) {};
     ~Spaceship() = default;
 
-    int getResources() const { return m_resources; }
-    int getFuel() const { return m_fuel; }
-    int getProtection() const { return m_protection; }
     int getFood() const { return m_food; }
 
-    void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
-    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
-    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
     void setFood(int velueFood) { m_resources = zeroIfNegative(velueFood); }
     void setProtectionEnded() { m_protection = -1; }
 
-    void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
-    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
     void addFood(int velueFood) { m_resources += zeroIfNegative(velueFood); }
-    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
 
 private:
     //переменные: ресурсы, пища, топливо, защита
-    int m_resources;
     int m_food;
-    int m_fuel;
-    int m_protection;
 };
 
-class Enemy
+class Enemy : public SpaseItem
 {
 public:
     friend std::ostream& operator<<(std::ostream& os, Enemy& item) //перегрузка метода вывода для врага
@@ -85,16 +98,9 @@ public:
         return os;
     }
 
-    Enemy() :
-        m_resources(0),
-        m_fuel(0),
-        m_protection(0)
-    {};
+    Enemy() : SpaseItem::SpaseItem(0,0,0) {};
     Enemy(int resourcesValue, int fuelValue, int protectionValue) :
-        m_resources(resourcesValue),
-        m_fuel(fuelValue),
-        m_protection(protectionValue)
-    {};
+        SpaseItem::SpaseItem(resourcesValue, fuelValue, protectionValue) {};
     ~Enemy() = default;
 
     Enemy(const Enemy& over) = default;
@@ -104,26 +110,6 @@ public:
         m_fuel = fuelValue;
         m_protection = protectionValue;
     }
-
-
-    int getResources() const { return m_resources; }
-    int getFuel() const { return m_fuel; }
-    int getProtection() const { return m_protection; }
-
-    void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
-    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
-    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
-    void setProtectionEnded() { m_protection = -1; }
-
-    void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
-    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
-    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
-
-private:
-    //ресурсы, топливо, защита
-    int m_resources;
-    int m_fuel;
-    int m_protection;
 };
 
 class Shop
