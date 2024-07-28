@@ -20,6 +20,10 @@ bool inputInt(int& temp)
     }
 }
 
+int zeroIfNegative(int& value) { if (value < 0) { value = 0; } return value; }
+
+
+
 class Spaceship
 {
 public:
@@ -45,6 +49,23 @@ public:
     {};
     ~Spaceship() = default;
 
+    int getResources() const { return m_resources; }
+    int getFuel() const { return m_fuel; }
+    int getProtection() const { return m_protection; }
+    int getFood() const { return m_food; }
+
+    void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
+    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
+    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
+    void setFood(int velueFood) { m_resources = zeroIfNegative(velueFood); }
+    void setProtectionEnded() { m_protection = -1; }
+
+    void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
+    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
+    void addFood(int velueFood) { m_resources += zeroIfNegative(velueFood); }
+    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
+
+private:
     //переменные: ресурсы, пища, топливо, защита
     int m_resources;
     int m_food;
@@ -84,6 +105,21 @@ public:
         m_protection = protectionValue;
     }
 
+
+    int getResources() const { return m_resources; }
+    int getFuel() const { return m_fuel; }
+    int getProtection() const { return m_protection; }
+
+    void setResources(int velueResources) { m_resources = zeroIfNegative(velueResources); }
+    void setFuel(int velueFuel) { m_resources = zeroIfNegative(velueFuel); }
+    void setProtection(int velueProtection) { m_resources = zeroIfNegative(velueProtection); }
+    void setProtectionEnded() { m_protection = -1; }
+
+    void addResources(int velueResources) { m_resources += zeroIfNegative(velueResources); }
+    void addFuel(int velueFuel) { m_resources += zeroIfNegative(velueFuel); }
+    void addProtection(int velueProtection) { m_resources += zeroIfNegative(velueProtection); }
+
+private:
     //ресурсы, топливо, защита
     int m_resources;
     int m_fuel;
@@ -100,6 +136,11 @@ public:
             << "\n2. Food\t\t" << item.m_piceFood
             << "\n3. Protection\t" << item.m_piceProtection;
         return os;
+    }
+    friend std::istream& operator>>(std::istream& is, Shop& item) //перегрузка метода ввода для планеты
+    {
+        is >> item.m_piceFood >> item.m_piceFuel >> item.m_piceProtection;
+        return is;
     }
 
     Shop() :
@@ -120,7 +161,7 @@ class Planet
 public:
     friend std::istream& operator>>(std::istream& is, Planet& item) //перегрузка метода ввода для планеты
     {
-        is >> item.number >> item.label >> item.location >> item.resources >> item.shop.m_piceFood >> item.shop.m_piceFuel >> item.shop.m_piceProtection;
+        is >> item.number >> item.label >> item.location >> item.resources >> item.shop;
         return is;
     }
 
@@ -228,7 +269,7 @@ public:
                 }
                 case 4: // обмен ресурсов в магазине
                 {
-                    shopping();
+                    //shopping();
                     break;
                 }
                 case 0: // выход из игры
@@ -262,6 +303,7 @@ public:
         if (m_allPlanets.empty())
         {
             std::cout << "\nCannot load planets.";
+            ended();
             return;
         }
 
@@ -275,7 +317,7 @@ public:
     // конец игры
     bool is_ended() const
     {
-        if (m_mainSpaceship.m_protection < 0)
+        if (m_mainSpaceship.getProtection() < 0)
         {
             std::cout << "\nThe end of the game! See you next time!";
             return true;
@@ -284,7 +326,7 @@ public:
     }
     void ended() //принудительное завершение игры
     {
-        m_mainSpaceship.m_protection = -1;
+        m_mainSpaceship.setProtectionEnded();
     }
 
     //cписок доступных действий
@@ -333,7 +375,7 @@ public:
         // проверка что не та же планета, что и сейчас, иначе -1
         if (temp == 0) { return -1; }
         // если топлива больше, чем расстояния, то 1, иначе 0
-        else { return (m_mainSpaceship.m_fuel - temp >= 0); }
+        else { return (m_mainSpaceship.getFuel() - temp >= 0); }
     }
 
     // возможность что враг попался на пути к планете
@@ -357,17 +399,17 @@ public:
     {
         std::cout << "\nYou have arrived on Earth";
         m_mainSpaceship.location = 0;
-        if (m_mainSpaceship.m_resources < 100) { m_mainSpaceship.m_resources = 100; }
-        if (m_mainSpaceship.m_food < 100) { m_mainSpaceship.m_food = 100; }
-        if (m_mainSpaceship.m_fuel < 100) { m_mainSpaceship.m_fuel = 100; }
-        if (m_mainSpaceship.m_protection < 100) { m_mainSpaceship.m_protection = 100; }
+        if (m_mainSpaceship.getResources() < 100) { m_mainSpaceship.setResources(100); }
+        if (m_mainSpaceship.getFood() < 100) { m_mainSpaceship.setFood(100); }
+        if (m_mainSpaceship.getFuel() < 100) { m_mainSpaceship.setFuel(100); }
+        if (m_mainSpaceship.getProtection() < 100) { m_mainSpaceship.setProtection(100); }
     }
 
     // прилет на планету
     void flyToPlanet(int num)
     {
         //перелет на планету со сменой координат и вычетом топлива
-        m_mainSpaceship.m_fuel -= abs(m_mainSpaceship.location - m_allPlanets[num].location);
+        m_mainSpaceship.setFuel(m_mainSpaceship.getFuel() - abs(m_mainSpaceship.location - m_allPlanets[num].location));
         m_mainSpaceship.location = m_allPlanets[num].location;
         std::cout << "\n\nYou have arrived on the planet. (8-8)" << m_allPlanets[num];
     }
@@ -376,18 +418,18 @@ public:
     bool battle()
     {
         Sleep(1000);
-        if (m_mainSpaceship.m_protection >= m_enemy.m_protection)
+        if (m_mainSpaceship.getProtection() >= m_enemy.getProtection())
         {
-            m_mainSpaceship.m_fuel += m_enemy.m_fuel;
-            m_mainSpaceship.m_resources += m_enemy.m_resources;
-            m_mainSpaceship.m_protection += (m_enemy.m_resources / 2) - 5;
+            m_mainSpaceship.addFuel(m_enemy.getFuel());
+            m_mainSpaceship.addResources(m_enemy.getResources());
+            m_mainSpaceship.addProtection ((m_enemy.getProtection() - 5 / 2));
 
             return true;
         }
         else
         { //проигрыш в бою
-            m_mainSpaceship.m_protection -= 10;
-            m_enemy.m_protection -= 10;
+            m_mainSpaceship.setProtection(m_mainSpaceship.getProtection()-10);
+            m_enemy.setProtection(m_enemy.getProtection()-10);
 
             return false;
         }
@@ -407,8 +449,8 @@ public:
         else
         {
             std::cout << "\n\nNo luck! You've been defeated"
-                << "\nYour protection = " << m_mainSpaceship.m_protection
-                << "\nEnemy`s protection = " << m_enemy.m_protection;
+                << "\nYour protection = " << m_mainSpaceship.getProtection()
+                << "\nEnemy`s protection = " << m_enemy.getProtection();
 
             // вторая попытка и вожзможность перевести ресурсы в защиту
             int value;
@@ -417,7 +459,7 @@ public:
 
             while (value == 1)
             {
-                resourcesInBattle();
+                exchangeOfResourcesDuringTheBattle();
                 std::cout << "\nYou can transfer resources to protection points. Enter yes - 1 or no - 0: ";
 
                 while (!inputInt(value)) { std::cout << "\nEnter yes - 1 or no - 0: "; }
@@ -437,23 +479,23 @@ public:
     }
 
     //обмен ресурсов во время боя
-    void resourcesInBattle()
+    void exchangeOfResourcesDuringTheBattle()
     {
         std::cout << "\nYou can get 1 point of protection for 3 resource points.";
-        std::cout << "\nYous resource points: " << m_mainSpaceship.m_resources;
+        std::cout << "\nYous resource points: " << m_mainSpaceship.getResources();
         std::cout << "\nEnter the number of protection to share: ";
         int valueInt;// очки ресурсов для обмена
         while (!inputInt(valueInt)) { std::cout << "\nEnter the number of protection to share: "; }
 
-        while (valueInt > (m_mainSpaceship.m_resources / 3)) {
+        while (valueInt > (m_mainSpaceship.getResources() / 3)) {
             std::cout << "\nYou don't have that many resources. Enter the number of protection to share: ";
-            if (!inputInt(valueInt)) { valueInt = (m_mainSpaceship.m_resources / 3) + 1; }
+            if (!inputInt(valueInt)) { valueInt = (m_mainSpaceship.getResources() / 3) + 1; }
         }
-        m_mainSpaceship.m_resources -= valueInt * 3;
-        m_mainSpaceship.m_protection += valueInt;
+        m_mainSpaceship.setResources(m_mainSpaceship.getResources() - valueInt * 3);
+        m_mainSpaceship.addProtection( valueInt);
         std::cout << "\n\nSuccessful exchange"
-            << "\nYour protection = " << m_mainSpaceship.m_protection
-            << "\nEnemy`s protection = " << m_enemy.m_protection;
+            << "\nYour protection = " << m_mainSpaceship.getProtection()
+            << "\nEnemy`s protection = " << m_enemy.getProtection();
     }
 
     // поиск ресурсов на планете
@@ -462,7 +504,7 @@ public:
         auto iter = m_allPlanets.begin();
         while ((*iter).location != m_mainSpaceship.location) { ++iter; }
         int i = 0;
-        while ((*iter).resources > 0 && m_mainSpaceship.m_food > 0)
+        while ((*iter).resources > 0 && m_mainSpaceship.getFood() > 0)
         {
             if (i == 5)
             {
@@ -480,8 +522,8 @@ public:
             else
             {
                 i++;
-                std::cout << "\n\nYour resources: " << m_mainSpaceship.m_resources
-                    << "\nYour food: " << m_mainSpaceship.m_food
+                std::cout << "\n\nYour resources: " << m_mainSpaceship.getResources()
+                    << "\nYour food: " << m_mainSpaceship.getFood()
                     << "\nPlanet`s resources: " << (*iter).resources;
                 Sleep(500);
                 gettingResources(iter);
@@ -489,61 +531,61 @@ public:
         }
         std::cout << std::endl;
         if ((*iter).resources <= 0) { std::cout << "\nThe planet's resources have run out."; }
-        if (m_mainSpaceship.m_food <= 0) { std::cout << "\nWe can't continue the search without food."; }
+        if (m_mainSpaceship.getFood() <= 0) { std::cout << "\nWe can't continue the search without food."; }
     }
 
     //получение ресурсов и вычитание их из планеты
     void gettingResources(std::vector<Planet>::iterator iterPlanet)
     {
-        if (m_mainSpaceship.m_food < 3) m_mainSpaceship.m_food = 0;
-        else { m_mainSpaceship.m_food -= 3; }
-        if ((*iterPlanet).resources < 3) (*iterPlanet).resources = 0;
+        if (m_mainSpaceship.getFood() < 3) m_mainSpaceship.setFood(0);
+        else { m_mainSpaceship.setFood(m_mainSpaceship.getFood() - 3); }
+        if ((*iterPlanet).resources < 7) (*iterPlanet).resources = 0;
         else { (*iterPlanet).resources -= 7; }
-        m_mainSpaceship.m_resources += 7;
+        m_mainSpaceship.addResources( 7);
     }
 
     // обмен ресурсов в магазине
 
-    void shopping()
-    {
-        auto iter = m_allPlanets.begin();
-        while ((*iter).location != m_mainSpaceship.location) { ++iter; }
+    //void shopping()
+    //{
+    //    auto iter = m_allPlanets.begin();
+    //    while ((*iter).location != m_mainSpaceship.location) { ++iter; }
 
-        //массив пар с указателем на значение продукта в корабле и на цену такого продукта в этом магазине
-        std::pair<int*, int*> masValuePrice[] = { {&(m_mainSpaceship.m_fuel), &((*iter).shop.m_piceFuel)},
-                                                  {&(m_mainSpaceship.m_food), &((*iter).shop.m_piceFood)},
-                                                  {&(m_mainSpaceship.m_protection), &((*iter).shop.m_piceProtection)} };
+    //    //массив пар с указателем на значение продукта в корабле и на цену такого продукта в этом магазине
+    //    std::pair<int*, int*> masValuePrice[] = { {&(m_mainSpaceship.m_fuel), &((*iter).shop.m_piceFuel)},
+    //                                              {&(m_mainSpaceship.m_food), &((*iter).shop.m_piceFood)},
+    //                                              {&(m_mainSpaceship.m_protection), &((*iter).shop.m_piceProtection)} };
 
-        std::cout << (*iter).shop;
-        std::cout << "\nYour resources:" << m_mainSpaceship.m_resources;
+    //    std::cout << (*iter).shop;
+    //    std::cout << "\nYour resources:" << m_mainSpaceship.getResources();
 
-        int numProd;
-        do
-        {
-            std::cout << "\nEnter the number of the product you want to buy: ";
-            if (!inputInt(numProd)) { numProd = -1; }
-        } while (numProd < 0 && numProd>3);
-        if (numProd == 0) return;
+    //    int numProd;
+    //    do
+    //    {
+    //        std::cout << "\nEnter the number of the product you want to buy: ";
+    //        if (!inputInt(numProd)) { numProd = -1; }
+    //    } while (numProd < 0 || numProd>3);
+    //    if (numProd == 0) return;
 
-        int quanProd = 0;
-        do
-        {
-            std::cout << "\nEnter the quantity of the product you want to buy: ";
-            if (inputInt(quanProd))
-            {
-                if (m_mainSpaceship.m_resources < (quanProd * *(masValuePrice[numProd - 1].second)))
-                {
-                    std::cout << "\nThere are not enough resources to purchase the product";
-                }
-            }
-            else { quanProd = 1000000; }
-        } while (m_mainSpaceship.m_resources < (quanProd * *(masValuePrice[numProd - 1].second)));
-        if (quanProd == 0) return;
+    //    int quanProd = 0;
+    //    do
+    //    {
+    //        std::cout << "\nEnter the quantity of the product you want to buy: ";
+    //        if (inputInt(quanProd))
+    //        {
+    //            if (m_mainSpaceship.getResources() < (quanProd * *(masValuePrice[numProd - 1].second)))
+    //            {
+    //                std::cout << "\nThere are not enough resources to purchase the product";
+    //            }
+    //        }
+    //        else { quanProd = 1000000; }
+    //    } while (m_mainSpaceship.getResources() < (quanProd * *(masValuePrice[numProd - 1].second)));
+    //    if (quanProd == 0) return;
 
-        *(masValuePrice[numProd - 1].first) += quanProd;
-        m_mainSpaceship.m_resources -= (quanProd * *(masValuePrice[numProd - 1].second));
-        std::cout << "\nThe purchase is successful! " << m_mainSpaceship;
-    }
+    //    *(masValuePrice[numProd - 1].first) += quanProd;
+    //    m_mainSpaceship.setResources(m_mainSpaceship.getResources() - (quanProd * *(masValuePrice[numProd - 1].second)));
+    //    std::cout << "\nThe purchase is successful! " << m_mainSpaceship;
+    //}
 
 
     Spaceship m_mainSpaceship;
