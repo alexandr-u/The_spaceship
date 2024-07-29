@@ -287,6 +287,7 @@ public:
                 }
             }
         }
+        system("pause");
     }
 
     // старт игры 
@@ -322,9 +323,10 @@ public:
     {
         if (m_mainSpaceship.getProtection() < 0)
         {
-            std::cout << "\nThe end of the game! See you next time!";
+            std::cout << "\nThe end of the game! See you next time!\n";
             return true;
         }
+        if (m_mainSpaceship.getFood() == 0) { return true; }
         else { return false; }
     }
     void ended() //принудительное завершение игры
@@ -391,8 +393,8 @@ public:
         else //выпадение врага при 2
         {
             //генерация значений полей врага
-            int temp = rand() % 70 + 50;//protection
-            m_enemy(((double)temp / 100 * (rand() % 40 + 30)), ((double)temp / 100 * (rand() % 70 + 30)), temp);
+            int temp = m_mainSpaceship.getProtection()*(double(rand() % 4 + 8)/10);//protection
+            m_enemy(((double)temp / 100 * (rand() % 30 + 10)), ((double)temp / 100 * (rand() % 30 + 10)), temp);
             return true;
         }
     }
@@ -420,12 +422,12 @@ public:
     // бой с врагами (сложение/вычитание ресурсов при победе/поражении)
     bool battle()
     {
+        m_mainSpaceship.setFood(m_mainSpaceship.getFood()-5);
         Sleep(1000);
         if (m_mainSpaceship.getProtection() >= m_enemy.getProtection())
         {
             m_mainSpaceship.addFuel(m_enemy.getFuel());
             m_mainSpaceship.addResources(m_enemy.getResources());
-            m_mainSpaceship.addProtection ((m_enemy.getProtection() - 5 / 2));
 
             return true;
         }
