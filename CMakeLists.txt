@@ -6,8 +6,9 @@ project(The_spaceship)
 file(COPY planet.txt
      DESTINATION ./build)
 
+
 # add the executable
-add_executable(The_spaceship main.cpp planet.txt)
+add_executable(The_spaceship main.cpp planet.txt GameSpaceship.cpp GameSpaceship.h Enemy.cpp Enemy.h Planet.cpp Planet.h Shop.cpp Shop.h SpaceItem.cpp SpaceItem.h Spaceship.cpp Spaceship.h)
 
 add_custom_target(copy_file ALL
 DEPENDS The_spaceship
