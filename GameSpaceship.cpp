@@ -62,7 +62,7 @@ void Game::run()
                                 // долететь можно
                                 else
                                 {
-                                    if (enemyOnWay())//попался враг
+                                    if (enemyOnWay(4))//попался враг
                                     {
                                         if (!attack()) { ended(); break; }
                                     }
@@ -143,7 +143,6 @@ bool Game::is_ended() const
         std::cout << "\nThe end of the game! See you next time!\n";
         return true;
     }
-    if (m_mainSpaceship.getFood() == 0) { return true; }
     else { return false; }
 }
 void Game::ended() //принудительное завершение игры
@@ -201,13 +200,13 @@ int Game::possibilityOfFlight(int num)
 }
 
 // возможность что враг попался на пути к планете
-bool Game::enemyOnWay()
+bool Game::enemyOnWay(int col)
 {
-    if (randInt() % 3 < 2) // нет врага при 0 1
+    if (randInt() % 10 > col) // нет врага 
     {
         return false;
     }
-    else //выпадение врага при 2
+    else //выпадение врага 
     {
         //генерация значений полей врага
         int temp = m_mainSpaceship.getProtection() * (double(randInt() % 4 + 8) / 10);//protection
@@ -240,7 +239,7 @@ bool Game::battle()
 // бой с врагами логика
 bool Game::attack()
 {
-    std::cout << "\nOh no. You've been attacked! (:\\/)" << m_enemy;
+    std::cout << "\n\nOh no. You've been attacked! (:\\/)" << m_enemy;
     if (battle()) // сразу победа
     {
         std::cout << "\n\nCongratulations! You've won!"
@@ -329,6 +328,11 @@ void Game::searchForResources()
                 << "\nPlanet`s resources: " << (*iter).getResources();
             Sleep(500);
             gettingResources(iter);
+            if (enemyOnWay(1)) 
+            {
+                if (!attack()) { ended(); break; }
+                i = 5;
+            }
         }
     }
     std::cout << std::endl;

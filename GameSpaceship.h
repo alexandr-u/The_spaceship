@@ -45,7 +45,7 @@ public:
     int possibilityOfFlight(int num);
 
     // возможность что враг попался на пути к планете
-    bool enemyOnWay();
+    bool enemyOnWay(int col);
 
     // прилет на планету
     void flyToPlanet(int num);
