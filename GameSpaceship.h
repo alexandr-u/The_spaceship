@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <random>
 #include "windows.h"
 
 #include "SpaceItem.h"

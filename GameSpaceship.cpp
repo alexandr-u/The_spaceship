@@ -1,6 +1,8 @@
 
 #include "GameSpaceship.h"
 
+std::random_device r;
+std::default_random_engine randInt(r());
 
 bool inputInt(int& temp)
 {
@@ -201,15 +203,15 @@ int Game::possibilityOfFlight(int num)
 // возможность что враг попался на пути к планете
 bool Game::enemyOnWay()
 {
-    if (rand() % 3 < 2) // нет врага при 0 1
+    if (randInt() % 3 < 2) // нет врага при 0 1
     {
         return false;
     }
     else //выпадение врага при 2
     {
         //генерация значений полей врага
-        int temp = m_mainSpaceship.getProtection() * (double(rand() % 4 + 8) / 10);//protection
-        m_enemy(((double)temp / 100 * (rand() % 30 + 10)), ((double)temp / 100 * (rand() % 30 + 10)), temp);
+        int temp = m_mainSpaceship.getProtection() * (double(randInt() % 4 + 8) / 10);//protection
+        m_enemy(((double)temp / 100 * (randInt() % 30 + 10)), ((double)temp / 100 * (randInt() % 30 + 10)), temp);
         return true;
     }
 }
