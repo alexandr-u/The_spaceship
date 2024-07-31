@@ -66,10 +66,10 @@ void Game::run()
                                     }
                                     if (usersChoice == 1)
                                     {
-                                        flyToEarth();
+                                        m_mainSpaceship.flyToEarth();
                                         break;
                                     }
-                                    flyToPlanet(usersChoice - 1);
+                                    m_mainSpaceship.flyToPlanet(m_allPlanets[usersChoice - 1].getLocation());
                                 }
 
                             }
@@ -212,26 +212,6 @@ bool Game::enemyOnWay()
         m_enemy(((double)temp / 100 * (rand() % 30 + 10)), ((double)temp / 100 * (rand() % 30 + 10)), temp);
         return true;
     }
-}
-
-// прилет на планету Земля и повышение ресурсов до минимума (100)
-void Game::flyToEarth()
-{
-    std::cout << "\nYou have arrived on Earth";
-    m_mainSpaceship.location = 0;
-    if (m_mainSpaceship.getResources() < 100) { m_mainSpaceship.setResources(100); }
-    if (m_mainSpaceship.getFood() < 100) { m_mainSpaceship.setFood(100); }
-    if (m_mainSpaceship.getFuel() < 100) { m_mainSpaceship.setFuel(100); }
-    if (m_mainSpaceship.getProtection() < 100) { m_mainSpaceship.setProtection(100); }
-}
-
-// прилет на планету
-void Game::flyToPlanet(int num)
-{
-    //перелет на планету со сменой координат и вычетом топлива
-    m_mainSpaceship.setFuel(m_mainSpaceship.getFuel() - abs(m_mainSpaceship.location - m_allPlanets[num].getLocation()));
-    m_mainSpaceship.location = m_allPlanets[num].getLocation();
-    std::cout << "\n\nYou have arrived on the planet. (8-8)" << m_allPlanets[num];
 }
 
 // бой с врагами (сложение/вычитание ресурсов при победе/поражении)

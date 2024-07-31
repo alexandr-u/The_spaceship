@@ -22,6 +22,12 @@ public:
 
     void addFood(int velueFood);
 
+    // прилет на планету Земля и повышение ресурсов до минимума (100)
+    void flyToEarth();
+        
+    // прилет на планету
+    void flyToPlanet(int loc);
+
 private:
     int m_food;
 };
