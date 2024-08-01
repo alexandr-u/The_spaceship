@@ -166,9 +166,10 @@ void Game::showMenu() const
 void Game::outputAllPlanet()
 {
     std::cout << "\nThe output of data about the planet.";
-    std::cout << "\nNum\t Label   \tResourses\tDistanse";
+    std::cout << "\nNum\tLabel   \tResourses\tDistanse";
 
-    for (auto&& planet : m_allPlanets) { std::cout << planet; }
+    int i = 1;
+    for (auto&& planet : m_allPlanets) { std::cout<<std::endl<<i++ << planet; }
 }
 
 // проверка на правильный номер планеты
@@ -178,7 +179,7 @@ int Game::choosingPlanet()//-1 - такой планеты нет, 0 - выхо�
     int numberPlanet;
     if (inputInt(numberPlanet))
     {
-        if (numberPlanet < 0 && numberPlanet >((*m_allPlanets.cend()).getNumber())) { return -1; }
+        if (numberPlanet < 0 && numberPlanet > (m_allPlanets.size())) { return -1; }
         else { return numberPlanet; }
     }
     else
@@ -244,51 +245,46 @@ bool Game::battle()
 bool Game::attack()
 {
     std::cout << "\n\nOh no. You've been attacked! (:\\/)" << m_enemy;
-    if (battle()) // сразу победа
-    {
-        std::cout << "\n\nCongratulations! You've won!"
-            << m_mainSpaceship;
-
-        return true;
-    }
-    else
+    bool vin = false;
+    vin = battle();
+    if (!vin)
     {
         std::cout << "\n\nNo luck! You've been defeated"
             << "\nYour protection = " << m_mainSpaceship.getProtection()
             << "\nEnemy`s protection = " << m_enemy.getProtection();
 
         // вторая попытка и вожзможность перевести ресурсы в защиту
-        int value;
-        std::cout << "\nYou can transfer resources to protection points. Enter yes(1) or no(0): ";
+        resourcesDuringTheBattle();
+
+        vin = battle();
+    }
+    if (vin) { std::cout << "\n\nCongratulations! You've won!" << m_mainSpaceship; }
+    else { std::cout << "\nGame over! You've lost!";  }
+
+    return vin;
+}
+//вопрос к пользователю о необходимости перевода ресурсов во время боя
+void Game::resourcesDuringTheBattle()
+{
+    int value;
+    std::cout << "\nYou can transfer resources to protection points. Enter yes(1) or no(0): ";
+    while (!inputInt(value)) { std::cout << "\nEnter yes - 1 or no - 0: "; }
+
+    while (value == 1)
+    {
+        exchangeOfResourcesDuringTheBattle();
+        std::cout << "\nYou can transfer resources to protection points. Enter yes - 1 or no - 0: ";
+
         while (!inputInt(value)) { std::cout << "\nEnter yes - 1 or no - 0: "; }
-
-        while (value == 1)
-        {
-            exchangeOfResourcesDuringTheBattle();
-            std::cout << "\nYou can transfer resources to protection points. Enter yes - 1 or no - 0: ";
-
-            while (!inputInt(value)) { std::cout << "\nEnter yes - 1 or no - 0: "; }
-        }
-        if (battle())
-        {
-            std::cout << "\n\nCongratulations! You've won!"
-                << m_mainSpaceship;
-            return true;
-        }
-        else
-        {
-            std::cout << "\nGame over! You've lost!";
-            return false;
-        }
     }
 }
 
 //обмен ресурсов во время боя
 void Game::exchangeOfResourcesDuringTheBattle()
 {
-    std::cout << "\nYou can get 1 point of protection for 3 resource points.";
-    std::cout << "\nYous resource points: " << m_mainSpaceship.getResources();
-    std::cout << "\nEnter the number of protection to share: ";
+    std::cout << "\nYou can get 1 point of protection for 3 resource points."
+              << "\nYous resource points: " << m_mainSpaceship.getResources()
+              << "\nEnter the number of protection to share: ";
     int valueInt;// очки ресурсов для обмена
     while (!inputInt(valueInt)) { std::cout << "\nEnter the number of protection to share: "; }
 
@@ -299,8 +295,8 @@ void Game::exchangeOfResourcesDuringTheBattle()
     m_mainSpaceship.setResources(m_mainSpaceship.getResources() - valueInt * 3);
     m_mainSpaceship.addProtection(valueInt);
     std::cout << "\n\nSuccessful exchange"
-        << "\nYour protection = " << m_mainSpaceship.getProtection()
-        << "\nEnemy`s protection = " << m_enemy.getProtection();
+              << "\nYour protection = " << m_mainSpaceship.getProtection()
+              << "\nEnemy`s protection = " << m_enemy.getProtection();
 }
 
 // поиск ресурсов на планете

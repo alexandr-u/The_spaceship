@@ -47,14 +47,14 @@ public:
     // возможность что враг попался на пути к планете
     bool enemyOnWay(int col);
 
-    // прилет на планету
-    void flyToPlanet(int num);
-
     // бой с врагами (сложение/вычитание ресурсов при победе/поражении)
     bool battle();
 
     // бой с врагами логика
     bool attack();
+
+    //вопрос к пользователю о необходимости перевода ресурсов во время боя
+    void resourcesDuringTheBattle();
 
     //обмен ресурсов во время боя
     void exchangeOfResourcesDuringTheBattle();

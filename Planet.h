@@ -13,7 +13,7 @@ public:
     Planet(const Planet& over) = default;
     ~Planet() = default;
 
-    int getNumber() const { return number; }
+
     int getLocation() const { return location; }
     int getResources() const { return resources; }
 
@@ -22,7 +22,6 @@ public:
     Shop shop;
 private:
     //название, положение, ресурсы, магазин
-    int number;
     std::string label;
     int location;
     int resources;
