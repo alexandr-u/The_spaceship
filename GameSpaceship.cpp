@@ -46,7 +46,9 @@ void Game::run()
                         if (usersChoice == 0) { break; }
                         else // подходящее значение планеты
                         {
-                            int possibility = possibilityOfFlight(usersChoice - 1);
+                            auto iterPlanet = m_mapLocation_Planet.begin();
+                            for (int i = 1; i < usersChoice; i++) { ++iterPlanet; }
+                            int possibility = possibilityOfFlight(iterPlanet->first);
                             if (possibility == -1)
                             {
                                 std::cout << "\nYou are already on this planet.";
@@ -71,7 +73,7 @@ void Game::run()
                                         m_mainSpaceship.flyToEarth();
                                         break;
                                     }
-                                    m_mainSpaceship.flyToPlanet(m_allPlanets[usersChoice - 1].getLocation());
+                                    m_mainSpaceship.flyToPlanet(iterPlanet->first);
                                 }
 
                             }
@@ -115,15 +117,16 @@ void Game::start()
     // создание планет по данным из файла
     if (auto inF = std::fstream("planet.txt"))
     {
+        int i = 0;
         while (inF && !inF.eof())
         {
             Planet temp;
             inF >> temp;
-            m_allPlanets.push_back(temp);
+            m_mapLocation_Planet[temp.getLocation()] = temp ;
         }
     }
 
-    if (m_allPlanets.empty())
+    if (m_mapLocation_Planet.empty())
     {
         std::cout << "\nCannot load planets.";
         ended();
@@ -169,7 +172,7 @@ void Game::outputAllPlanet()
     std::cout << "\nNum\tLabel   \tResourses\tDistanse";
 
     int i = 1;
-    for (auto&& planet : m_allPlanets) { std::cout<<std::endl<<i++ << planet; }
+    for (auto&& el_map : m_mapLocation_Planet) { std::cout<<std::endl<<i++ << el_map.second; }
 }
 
 // проверка на правильный номер планеты
@@ -179,7 +182,7 @@ int Game::choosingPlanet()//-1 - такой планеты нет, 0 - выхо�
     int numberPlanet;
     if (inputInt(numberPlanet))
     {
-        if (numberPlanet < 0 && numberPlanet > (m_allPlanets.size())) { return -1; }
+        if (numberPlanet < 0 && numberPlanet > (m_mapLocation_Planet.size())) { return -1; }
         else { return numberPlanet; }
     }
     else
@@ -188,12 +191,11 @@ int Game::choosingPlanet()//-1 - такой планеты нет, 0 - выхо�
     }
 }
 
-// проверка на топливо и расстояние до планеты
-int Game::possibilityOfFlight(int num)
+// проверка на топливо и расстояние до планеты 
+int Game::possibilityOfFlight(int location)
 {
     // расстояние до планеты
-    int temp = abs(m_mainSpaceship.location - m_allPlanets[num].getLocation());
-
+    int temp = abs(m_mainSpaceship.location - location);
     // проверка что не та же планета, что и сейчас, иначе -1
     if (temp == 0) { return -1; }
     // если топлива больше, чем расстояния, то 1, иначе 0
@@ -302,10 +304,8 @@ void Game::exchangeOfResourcesDuringTheBattle()
 // поиск ресурсов на планете
 void Game::searchForResources()
 {
-    auto iter = m_allPlanets.begin();
-    while ((*iter).getLocation() != m_mainSpaceship.location) { ++iter; }
     int i = 0;
-    while ((*iter).getResources() > 0 && m_mainSpaceship.getFood() > 0)
+    while ((m_mapLocation_Planet[m_mainSpaceship.location]).getResources() > 0 && m_mainSpaceship.getFood() > 0)
     {
         if (i == 5)
         {
@@ -325,9 +325,9 @@ void Game::searchForResources()
             i++;
             std::cout << "\n\nYour resources: " << m_mainSpaceship.getResources()
                 << "\nYour food: " << m_mainSpaceship.getFood()
-                << "\nPlanet`s resources: " << (*iter).getResources();
+                << "\nPlanet`s resources: " << (m_mapLocation_Planet[m_mainSpaceship.location]).getResources();
             Sleep(500);
-            gettingResources(iter);
+            gettingResources(m_mapLocation_Planet[m_mainSpaceship.location]);
             if (enemyOnWay(1)) 
             {
                 if (!attack()) { ended(); break; }
@@ -336,16 +336,16 @@ void Game::searchForResources()
         }
     }
     std::cout << std::endl;
-    if ((*iter).getResources() <= 0) { std::cout << "\nThe planet's resources have run out."; }
+    if ((m_mapLocation_Planet[m_mainSpaceship.location]).getResources() <= 0) { std::cout << "\nThe planet's resources have run out."; }
     if (m_mainSpaceship.getFood() <= 0) { std::cout << "\nWe can't continue the search without food."; }
 }
 
 //получение ресурсов и вычитание их из планеты
-void Game::gettingResources(std::vector<Planet>::iterator iterPlanet)
+void Game::gettingResources(Planet& planet)
 {
     if (m_mainSpaceship.getFood() < 3) m_mainSpaceship.setFood(0);
     else { m_mainSpaceship.setFood(m_mainSpaceship.getFood() - 3); }
-    (*iterPlanet).removeResources(7);
+    (planet).removeResources(7);
     m_mainSpaceship.addResources(7);
 }
 
@@ -353,18 +353,16 @@ void Game::gettingResources(std::vector<Planet>::iterator iterPlanet)
 
 void Game::shopping()
 {
-    auto iter = m_allPlanets.begin();
-    while ((*iter).getLocation() != m_mainSpaceship.location) { ++iter; }
-
+    auto planet = m_mapLocation_Planet[m_mainSpaceship.location];
     //массив пар с указателем на значение продукта в корабле и на цену такого продукта в этом магазине
-    std::pair<void (Spaceship::*)(int), int> masValuePrice[] = { {(&Spaceship::addFuel), ((*iter).shop.getPriceFuel())},
-                                              {(&Spaceship::addFood), ((*iter).shop.getPriceFood())},
-                                              {(&Spaceship::addProtection), ((*iter).shop.getPriceProtection())} };
+    std::pair<void (Spaceship::*)(int), int> masValuePrice[] = { {(&Spaceship::addFuel), ((planet).shop.getPriceFuel())},
+                                              {(&Spaceship::addFood), ((planet).shop.getPriceFood())},
+                                              {(&Spaceship::addProtection), ((planet).shop.getPriceProtection())} };
 
     //void (Spaceship::* f)(int) = &Spaceship::setFuel;
     //(m_mainSpaceship.*f)(11);
 
-    std::cout << (*iter).shop;
+    std::cout << (planet).shop;
     std::cout << "\nYour resources:" << m_mainSpaceship.getResources();
 
     int numProd;

@@ -5,6 +5,7 @@
 #include <string>
 #include <functional>
 #include <random>
+#include <map>
 #include "windows.h"
 
 #include "SpaceItem.h"
@@ -63,13 +64,12 @@ public:
     void searchForResources();
 
     //получение ресурсов и вычитание их из планеты
-    void gettingResources(std::vector<Planet>::iterator iterPlanet);
+    void gettingResources(Planet& planet);
 
     // обмен ресурсов в магазине
     void shopping();
 
-
     Spaceship m_mainSpaceship;
-    std::vector<Planet> m_allPlanets;
+    std::map<int, Planet> m_mapLocation_Planet;
     Enemy m_enemy;
 };
