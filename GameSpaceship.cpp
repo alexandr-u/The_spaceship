@@ -25,7 +25,7 @@ void Game::run()
     start();
     while (!is_ended())
     {
-        showMenu();
+        showMenu(); 
         int choose;
         if (inputInt(choose))
         {
@@ -210,7 +210,11 @@ bool Game::enemyOnWay(int col)
     {
         //генерация значений полей врага
         int temp = m_mainSpaceship.getProtection() * (double(randInt() % 4 + 8) / 10);//protection
-        m_enemy(((double)temp / 100 * (randInt() % 30 + 10)), ((double)temp / 100 * (randInt() % 30 + 10)), temp);
+
+        m_enemy.setResources(((double)temp / 100 * (randInt() % 30 + 10)));
+        m_enemy.setFuel(((double)temp / 100 * (randInt() % 30 + 10)));
+        m_enemy.setProtection(temp);
+        
         return true;
     }
 }

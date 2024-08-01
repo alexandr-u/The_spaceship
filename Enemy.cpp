@@ -10,9 +10,3 @@ std::ostream& operator<<(std::ostream& os, Enemy& item)
         << "\nresources\t" << item.m_resources;
     return os;
 }
-void Enemy::operator () (int resourcesValue, int fuelValue, int protectionValue) 
-{
-    m_resources = resourcesValue;
-    m_fuel = fuelValue;
-    m_protection = protectionValue;
-}

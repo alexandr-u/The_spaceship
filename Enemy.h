@@ -12,7 +12,5 @@ public:
         SpaceItem::SpaceItem(resourcesValue, fuelValue, protectionValue) {};
     ~Enemy() = default;
 
-    Enemy(const Enemy& over) = default;
-    void operator () (int resourcesValue, int fuelValue, int protectionValue); //вносить данные через скобочки
-    
+    Enemy(const Enemy& over) = default;    
 };
