@@ -63,9 +63,6 @@ public:
     // поиск ресурсов на планете
     void searchForResources();
 
-    //получение ресурсов и вычитание их из планеты
-    void gettingResources(Planet& planet);
-
     // обмен ресурсов в магазине
     void shopping();
 

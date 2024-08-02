@@ -11,8 +11,7 @@ std::istream& operator>>(std::istream& is, Planet& item) //перегрузка 
 std::ostream& operator<<(std::ostream& os, Planet& item) //перегрузка метода вывода для планеты
 {
     os << "\t" << item.label
-        << "\t" << item.resources
-        << "\t\t" << abs(Spaceship::location - item.location);
+        << "\t" << item.resources;
     return os;
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "SpaceItem.h"
+#include "Planet.h"
 
 class Spaceship : public SpaceItem
 {
@@ -27,6 +28,10 @@ public:
         
     // прилет на планету
     void flyToPlanet(int loc);
+
+    //получение ресурсов и вычитание их из планеты
+    void gettingResources(Planet& planet);
+
 
 private:
     int m_food;

@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Spaceship.h"
 #include "Shop.h"
 class Planet
 {

@@ -172,7 +172,7 @@ void Game::outputAllPlanet()
     std::cout << "\nNum\tLabel   \tResourses\tDistanse";
 
     int i = 1;
-    for (auto&& el_map : m_mapLocation_Planet) { std::cout<<std::endl<<i++ << el_map.second; }
+    for (auto&& el_map : m_mapLocation_Planet) { std::cout<<std::endl<<i++ << el_map.second <<"\t\t" << abs(m_mainSpaceship.location - el_map.first); }
 }
 
 // проверка на правильный номер планеты
@@ -327,26 +327,18 @@ void Game::searchForResources()
                 << "\nYour food: " << m_mainSpaceship.getFood()
                 << "\nPlanet`s resources: " << (m_mapLocation_Planet[m_mainSpaceship.location]).getResources();
             Sleep(500);
-            gettingResources(m_mapLocation_Planet[m_mainSpaceship.location]);
+            m_mainSpaceship.gettingResources(m_mapLocation_Planet[m_mainSpaceship.location]);
+            /* рандомный враг при поиске ресурсов 
             if (enemyOnWay(1)) 
             {
                 if (!attack()) { ended(); break; }
                 i = 5;
-            }
+            }*/
         }
     }
     std::cout << std::endl;
     if ((m_mapLocation_Planet[m_mainSpaceship.location]).getResources() <= 0) { std::cout << "\nThe planet's resources have run out."; }
     if (m_mainSpaceship.getFood() <= 0) { std::cout << "\nWe can't continue the search without food."; }
-}
-
-//получение ресурсов и вычитание их из планеты
-void Game::gettingResources(Planet& planet)
-{
-    if (m_mainSpaceship.getFood() < 3) m_mainSpaceship.setFood(0);
-    else { m_mainSpaceship.setFood(m_mainSpaceship.getFood() - 3); }
-    (planet).removeResources(7);
-    m_mainSpaceship.addResources(7);
 }
 
 // обмен ресурсов в магазине

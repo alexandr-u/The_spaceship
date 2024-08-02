@@ -36,3 +36,12 @@ void Spaceship::flyToPlanet(int loc)
     location = loc;
     std::cout << "\n\nYou have arrived on the planet. (8-8)";
 }
+
+//получение ресурсов и вычитание их из планеты
+void Spaceship::gettingResources(Planet& planet)
+{
+    if (m_food < 3) m_food=0;
+    else { m_food -= 3; }
+    (planet).removeResources(7);
+    m_resources += 7;
+}
