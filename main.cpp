@@ -4,8 +4,6 @@
 #include <string>
 #include "windows.h"
 
-
-
 #include "Spaceship.h"
 #include "GameSpaceship.h"
 

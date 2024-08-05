@@ -23,7 +23,7 @@ void Spaceship::flyToEarth()
 {
     std::cout << "\nYou have arrived on Earth";
     location = 0;
-    if (m_resources < 100) { m_resources=100; }
+    if (m_resources < 100) { m_resources = 100; }
     if (m_food < 100) { m_food = 100; }
     if (m_fuel < 100) { m_fuel = 100; }
     if (m_protection < 100) { m_protection = 100; }
