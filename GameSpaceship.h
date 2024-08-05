@@ -39,6 +39,9 @@ public:
     // вывод планет
     void outputAllPlanet();
 
+    //полет из меню
+    void fly();
+
     // проверка на правильный номер планеты
     int choosingPlanet();
 

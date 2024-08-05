@@ -1,5 +1,6 @@
 #include "Spaceship.h"
 
+
 extern int zeroIfNegative(int& value);
 
 std::ostream& operator<<(std::ostream& os, Spaceship& item)

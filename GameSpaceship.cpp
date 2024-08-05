@@ -33,53 +33,7 @@ void Game::run()
             {
             case 1: //полет
             {
-                bool flag = 0; // 1 - неправильный ввод пользователя
-                do
-                {
-                    flag = 0;
-                    outputAllPlanet();
-                    int usersChoice;
-                    usersChoice = choosingPlanet();
-                    if (usersChoice == -1) { std::cout << "\nThe input was incorrect, please try again."; flag = 1; }
-                    else
-                    {
-                        if (usersChoice == 0) { break; }
-                        else // подходящее значение планеты
-                        {
-                            auto iterPlanet = m_mapLocation_Planet.begin();
-                            for (int i = 1; i < usersChoice; i++) { ++iterPlanet; }
-                            int possibility = possibilityOfFlight(iterPlanet->first);
-                            if (possibility == -1)
-                            {
-                                std::cout << "\nYou are already on this planet.";
-                                flag = 1;
-                            }
-                            else
-                            {
-                                if (possibility == 0)
-                                {
-                                    std::cout << "\nNot enough fuel, please try again.";
-                                    flag = 1;
-                                }
-                                // долететь можно
-                                else
-                                {
-                                    if (enemyOnWay(4))//попался враг
-                                    {
-                                        if (!attack()) { ended(); break; }
-                                    }
-                                    if (usersChoice == 1)
-                                    {
-                                        m_mainSpaceship.flyToEarth();
-                                        break;
-                                    }
-                                    m_mainSpaceship.flyToPlanet(iterPlanet->first);
-                                }
-
-                            }
-                        }
-                    }
-                } while (flag);
+                fly();
                 break;
             }
             case 2: //поиск ресурсов
@@ -102,7 +56,7 @@ void Game::run()
                 ended();
                 break;
             }
-        deflaut:
+        default:
             {
                 std::cout << "\nEnter a different value";
             }
@@ -173,6 +127,57 @@ void Game::outputAllPlanet()
 
     int i = 1;
     for (auto&& el_map : m_mapLocation_Planet) { std::cout<<std::endl<<i++ << el_map.second <<"\t\t" << abs(m_mainSpaceship.location - el_map.first); }
+}
+
+void Game::fly()
+{
+    bool flag = 0; // 1 - неправильный ввод пользователя
+    do
+    {
+        flag = 0;
+        outputAllPlanet();
+        int usersChoice;
+        usersChoice = choosingPlanet();
+        if (usersChoice == -1) { std::cout << "\nThe input was incorrect, please try again."; flag = 1; }
+        else
+        {
+            if (usersChoice == 0) { break; }
+            else // подходящее значение планеты
+            {
+                auto iterPlanet = m_mapLocation_Planet.begin();
+                for (int i = 1; i < usersChoice; i++) { ++iterPlanet; }
+                int possibility = possibilityOfFlight(iterPlanet->first);
+                if (possibility == -1)
+                {
+                    std::cout << "\nYou are already on this planet.";
+                    flag = 1;
+                }
+                else
+                {
+                    if (possibility == 0)
+                    {
+                        std::cout << "\nNot enough fuel, please try again.";
+                        flag = 1;
+                    }
+                    // долететь можно
+                    else
+                    {
+                        if (enemyOnWay(4))//попался враг
+                        {
+                            if (!attack()) { ended(); break; }
+                        }
+                        if (usersChoice == 1)
+                        {
+                            m_mainSpaceship.flyToEarth();
+                            break;
+                        }
+                        m_mainSpaceship.flyToPlanet(iterPlanet->first);
+                    }
+
+                }
+            }
+        }
+    } while (flag);
 }
 
 // проверка на правильный номер планеты
