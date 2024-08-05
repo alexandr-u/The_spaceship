@@ -341,21 +341,29 @@ void Game::exchangeOfResourcesDuringTheBattle()
 {
     std::cout << "\nYou can get 1 point of protection for 3 resource points."
               << "\nYous resource points: " 
-              << m_mainSpaceship.getResources()
-              << "\nEnter the number of protection to share: ";
-    int valueInt;// очки ресурсов для обмена
-    while (!inputInt(valueInt)) 
-    { 
-        std::cout << "\nEnter the number of protection to share: "; 
-    }
-
-    while (valueInt > (m_mainSpaceship.getResources() / 3)) {
-        std::cout << "\nYou don't have that many resources. Enter the number of protection to share: ";
-        if (!inputInt(valueInt)) 
-        { 
-            valueInt = (m_mainSpaceship.getResources() / 3) + 1; 
+              << m_mainSpaceship.getResources();
+    int valueInt = 0;// очки ресурсов для обмена
+    do
+    {
+        std::cout << "\nEnter the number of protection to share: ";
+        if (!inputInt(valueInt))
+        {
+            std::cout << "\nTry again";
         }
-    }
+        else
+        {
+            if (valueInt == 0) { return; }
+            if (valueInt > (m_mainSpaceship.getResources() / 3))
+            {
+                std::cout << "\nYou don't have that many resources.";
+            }
+            else 
+            { 
+                break; 
+            }
+        }
+    } while (true);
+      
     m_mainSpaceship.setResources(m_mainSpaceship.getResources() - valueInt * 3);
     m_mainSpaceship.addProtection(valueInt);
     std::cout << "\n\nSuccessful exchange"
