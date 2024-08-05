@@ -253,10 +253,10 @@ bool Game::enemyOnWay(int col)
     else //выпадение врага 
     {
         //генерация значений полей врага
-        int temp = m_mainSpaceship.getProtection() * (double(randInt() % 4 + 8) / 10);//protection
+        double temp = m_mainSpaceship.getProtection() * (static_cast<double>(randInt() % 4 + 8) / 10);//protection
 
-        m_enemy.setResources(((double)temp / 100 * (randInt() % 30 + 10)));
-        m_enemy.setFuel(((double)temp / 100 * (randInt() % 30 + 10)));
+        m_enemy.setResources(temp / 100 * (randInt() % 30 + 10));
+        m_enemy.setFuel(temp / 100 * (randInt() % 30 + 10));
         m_enemy.setProtection(temp);
         
         return true;
